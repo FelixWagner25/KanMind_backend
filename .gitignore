@@ -1,0 +1,5 @@
+# Installed packages
+.venv/
+
+# Database
+db.sqlite3
