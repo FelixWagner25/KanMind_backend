@@ -19,11 +19,23 @@ class Task(models.Model):
     description = models.TextField()
     board = models.ForeignKey(
         Board, on_delete=models.CASCADE, related_name="tasks")
-    # status = Use TextChoices for this
-    # priority = Use TextChoices for this
     assignee = models.ManyToManyField(User, related_name="assignments")
     reviewer = models.ManyToManyField(User, related_name="reviews")
     due_date = models.DateField()
+
+    class Status(models.TextChoices):
+        TO_DO = "to_do"
+        IN_PROGRESS = "in_progress"
+        REVIEW = "review"
+        DONE = "done"
+
+    class Priority(models.TextChoices):
+        LOW = "low"
+        MEDIUM = "medium"
+        HIGH = "high"
+
+    def __str__(self):
+        return f"{self.title} {self.board}"
 
 
 class Comment(models.Model):
@@ -31,3 +43,6 @@ class Comment(models.Model):
         User, on_delete=models.CASCADE, related_name="comments")
     created_at = models.DateTimeField()
     content = models.TextField()
+
+    def __str__(self):
+        return f"{self.author} {self.created_at}" + f"{self.content}"[:10]
