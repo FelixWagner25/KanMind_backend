@@ -3,3 +3,7 @@
 
 # Database
 db.sqlite3
+
+# Migrations
+kanmind_app/migrations/
+auth_app/migrations/
