@@ -16,11 +16,12 @@ class BoardSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    board = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all())
     comments_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Task
-        fields = ["id", "board", "title", "description",
+        fields = ["id", "board", "title", "description", "status", "priority",
                   "assignee", "reviewer", "due_date", "comments_count"]
 
     def get_comments_count(self, obj):

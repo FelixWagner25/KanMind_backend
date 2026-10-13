@@ -34,6 +34,11 @@ class Task(models.Model):
         MEDIUM = "medium"
         HIGH = "high"
 
+    status = models.CharField(
+        max_length=11, choices=Status.choices, default=Status.TO_DO)
+    priority = models.CharField(
+        max_length=6, choices=Priority.choices, default=Priority.MEDIUM)
+
     def __str__(self):
         return f"{self.title} {self.board}"
 
