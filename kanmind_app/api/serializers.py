@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.auth.models import User
 from kanmind_app.models import Board, Task
 
 
@@ -17,12 +18,18 @@ class BoardSerializer(serializers.ModelSerializer):
 
 class TaskSerializer(serializers.ModelSerializer):
     board = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all())
+    assignee = serializers.PrimaryKeyRelatedField(read_only=True)
+    assignee_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), many=True, write_only=True, source='users')
+    reviewer = serializers.PrimaryKeyRelatedField(read_only=True)
+    reviewer_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), many=True, write_only=True, source='users')
     comments_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Task
         fields = ["id", "board", "title", "description", "status", "priority",
-                  "assignee", "reviewer", "due_date", "comments_count"]
+                  "assignee_id", "assignee", "reviewer_id", "reviewer", "due_date", "comments_count"]
 
     def get_comments_count(self, obj):
         return obj.comments.count()

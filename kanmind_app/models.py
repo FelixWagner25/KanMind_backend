@@ -16,7 +16,7 @@ class Board(models.Model):
 
 class Task(models.Model):
     title = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(blank=True)
     board = models.ForeignKey(
         Board, on_delete=models.CASCADE, related_name="tasks")
     assignee = models.ManyToManyField(User, related_name="assignments")
