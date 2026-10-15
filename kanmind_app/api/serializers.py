@@ -5,12 +5,15 @@ from kanmind_app.models import Board, Task
 
 class BoardSerializer(serializers.ModelSerializer):
     member_count = serializers.SerializerMethodField()
-    owner_id = serializers.PrimaryKeyRelatedField(
-        queryset=Board.objects.all(), write_only=True)
+    members = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
+    member_ids = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), many=True, write_only=True, source='members')
+    owner_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Board
-        fields = ["id", "title", "member_count", "members", "owner_id", ]
+        fields = ["id", "title", "member_count", "member_ids",
+                  "members",  "owner_id"]
 
     def get_member_count(self, obj):
         return obj.members.count()
@@ -18,12 +21,12 @@ class BoardSerializer(serializers.ModelSerializer):
 
 class TaskSerializer(serializers.ModelSerializer):
     board = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all())
-    assignee = serializers.PrimaryKeyRelatedField(read_only=True)
+    assignee = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
     assignee_id = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), many=True, write_only=True, source='users')
-    reviewer = serializers.PrimaryKeyRelatedField(read_only=True)
+        queryset=User.objects.all(), many=True, write_only=True, source='assignee')
+    reviewer = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
     reviewer_id = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), many=True, write_only=True, source='users')
+        queryset=User.objects.all(), many=True, write_only=True, source='reviewer')
     comments_count = serializers.SerializerMethodField()
 
     class Meta:
