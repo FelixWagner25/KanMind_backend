@@ -44,3 +44,15 @@ class TaskAssingedToMeViewSet(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return Task.objects.filter(assignee=user)
+
+
+class TaskReviewingViewSet(generics.ListAPIView):
+    """
+    A viewset for viewing and editing instances of tasks that are assigend to one specific user
+    """
+    permission_classes = [AllowAny]
+    serializer_class = TaskPostSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Task.objects.filter(reviewer=user)
