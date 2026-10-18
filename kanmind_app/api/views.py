@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from kanmind_app.models import Board, Task
-from .serializers import BoardSerializer, TaskSerializer
+from .serializers import BoardSerializer, TaskPostSerializer, TaskPatchSerializer
 
 
 class BoardViewSet(viewsets.ModelViewSet):
@@ -21,6 +21,13 @@ class TaskViewSet(viewsets.ModelViewSet):
     """
     A viewset for viewing and editing task instances.
     """
-    permission_classes = [AllowAny]
-    serializer_class = TaskSerializer
+    # ViewSet functions: list, create, retrieve, updated, partial_update, destroy
+    permission_classes = [IsAuthenticated]
     queryset = Task.objects.all()
+
+    def get_serializer_class(self):
+        if self.action in ["list", "create"]:
+            return TaskPostSerializer
+
+        elif self.action in ["retrieve", "update", "partial_update"]:
+            return TaskPatchSerializer
