@@ -26,8 +26,8 @@ class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
 
     def get_serializer_class(self):
-        if self.action in ["list", "create"]:
+        if self.action in ["list", "retrieve", "create"]:
             return TaskPostSerializer
 
-        elif self.action in ["retrieve", "update", "partial_update"]:
+        elif self.action in ["update", "partial_update"]:
             return TaskPatchSerializer
