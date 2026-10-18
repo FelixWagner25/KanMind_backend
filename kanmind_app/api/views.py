@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from kanmind_app.models import Board, Task
 from .serializers import BoardSerializer, TaskPostSerializer, TaskPatchSerializer
@@ -31,3 +32,15 @@ class TaskViewSet(viewsets.ModelViewSet):
 
         elif self.action in ["update", "partial_update"]:
             return TaskPatchSerializer
+
+
+class TaskAssingedToMeViewSet(generics.ListAPIView):
+    """
+    A viewset for viewing and editing instances of tasks that are assigend to one specific user
+    """
+    permission_classes = [AllowAny]
+    serializer_class = TaskPostSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Task.objects.filter(assignee=user)
