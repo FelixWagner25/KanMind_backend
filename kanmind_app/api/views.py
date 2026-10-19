@@ -74,3 +74,13 @@ class TaskCommentViewSet(generics.ListCreateAPIView):
         serializer.save(author=self.request.user,
                         created_at=datetime.datetime.now(),
                         task_id=self.kwargs['pk'])
+
+
+class TaskCommentDestroyViewSet(generics.DestroyAPIView):
+    """
+    A view for deletion of a task comment.
+    """
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return Comment.objects.filter(task_id=self.kwargs['task_id'])
