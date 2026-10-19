@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from kanmind_app.models import Board, Task
+from kanmind_app.models import Board, Task, Comment
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -64,3 +64,12 @@ class TaskPatchSerializer(serializers.ModelSerializer):
         model = Task
         fields = ["id", "title", "description", "status", "priority",
                   "assignee_id", "assignee", "reviewer_id", "reviewer", "due_date"]
+
+
+class TaskCommentSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(read_only=True)
+    author = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ["id", "created_at", "author", "content"]

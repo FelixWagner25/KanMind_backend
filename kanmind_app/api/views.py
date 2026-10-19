@@ -1,8 +1,9 @@
 from rest_framework import viewsets
 from rest_framework import generics
+import datetime
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from kanmind_app.models import Board, Task
-from .serializers import BoardSerializer, TaskPostSerializer, TaskPatchSerializer
+from kanmind_app.models import Board, Task, Comment
+from .serializers import BoardSerializer, TaskPostSerializer, TaskPatchSerializer, TaskCommentSerializer
 
 
 class BoardViewSet(viewsets.ModelViewSet):
@@ -56,3 +57,19 @@ class TaskReviewingViewSet(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return Task.objects.filter(reviewer=user)
+
+
+class TaskCommentViewSet(generics.ListCreateAPIView):
+    """
+    A viewset for viewing and posting and deleting of task comments.
+    """
+    permission_classes = [AllowAny]
+    serializer_class = TaskCommentSerializer
+
+    def get_queryset(self):
+        return Comment.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user,
+                        created_at=datetime.datetime.now(),
+                        task_id=self.kwargs['pk'])
