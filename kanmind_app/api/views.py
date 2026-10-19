@@ -67,7 +67,8 @@ class TaskCommentViewSet(generics.ListCreateAPIView):
     serializer_class = TaskCommentSerializer
 
     def get_queryset(self):
-        return Comment.objects.all()
+        task_id = self.kwargs['pk']
+        return Comment.objects.filter(task_id=task_id)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user,
