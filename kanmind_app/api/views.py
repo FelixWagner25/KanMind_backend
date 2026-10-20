@@ -27,8 +27,7 @@ class BoardViewSet(viewsets.ModelViewSet):
     """
     A viewset for viewing and editing board instances.
     """
-    # permission_classes = [IsAuthenticated]
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     serializer_class = BoardSerializer
     queryset = Board.objects.all()
 
