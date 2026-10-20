@@ -3,10 +3,10 @@ from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework import mixins
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import get_object_or_404
 from kanmind_app.models import Board, Task, Comment
-from .serializers import BoardSerializer, TaskPostSerializer, TaskPatchSerializer, TaskCommentSerializer, EmailCheckSerializer, EmailQuerySerializer
+from .serializers import BoardSerializer, BoardDetailSerializer, TaskPostSerializer, TaskPatchSerializer, TaskCommentSerializer, EmailCheckSerializer, EmailQuerySerializer
 
 
 class EmailCheckView(generics.RetrieveAPIView):
@@ -28,11 +28,17 @@ class BoardViewSet(viewsets.ModelViewSet):
     A viewset for viewing and editing board instances.
     """
     permission_classes = [IsAuthenticated]
-    serializer_class = BoardSerializer
+    # serializer_class = BoardSerializer
     queryset = Board.objects.all()
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    def get_serializer_class(self):
+        if (self.action == "create" or self.action == "list"):
+            return BoardSerializer
+        else:
+            return BoardDetailSerializer
 
 
 class TaskCreateView(generics.CreateAPIView):
@@ -57,7 +63,7 @@ class TaskAssingedToMeView(generics.ListAPIView):
     """
     A view for viewing and editing instances of tasks that are assigend to one specific user.
     """
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     serializer_class = TaskPostSerializer
 
     def get_queryset(self):
@@ -69,7 +75,7 @@ class TaskReviewingView(generics.ListAPIView):
     """
     A view for viewing and editing instances of tasks that are assigend to one specific user.
     """
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     serializer_class = TaskPostSerializer
 
     def get_queryset(self):
@@ -81,7 +87,7 @@ class TaskCommentView(generics.ListCreateAPIView):
     """
     A view for viewing and posting and deleting of task comments.
     """
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     serializer_class = TaskCommentSerializer
 
     def get_queryset(self):
@@ -98,7 +104,7 @@ class TaskCommentDestroyView(generics.DestroyAPIView):
     """
     A view for deletion of a task comment.
     """
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Comment.objects.filter(task_id=self.kwargs['task_id'])
