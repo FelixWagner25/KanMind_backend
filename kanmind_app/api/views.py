@@ -2,6 +2,7 @@ import datetime
 from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework import generics
+from rest_framework import mixins
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.generics import get_object_or_404
 from kanmind_app.models import Board, Task, Comment
@@ -35,20 +36,22 @@ class BoardViewSet(viewsets.ModelViewSet):
         serializer.save(owner=self.request.user)
 
 
-class TaskViewSet(viewsets.ModelViewSet):
-    """
-    A viewset for viewing and editing task instances.
-    """
-    # ViewSet functions: list, create, retrieve, updated, partial_update, destroy
+class TaskCreateView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = TaskPostSerializer
     queryset = Task.objects.all()
 
-    def get_serializer_class(self):
-        if self.action in ["list", "retrieve", "create"]:
-            return TaskPostSerializer
 
-        elif self.action in ["update", "partial_update"]:
-            return TaskPatchSerializer
+class TaskUpdateDestroyView(generics.GenericAPIView, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
+    permission_classes = [IsAuthenticated]
+    queryset = Task.objects.all()
+    serializer_class = TaskPatchSerializer
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
 
 
 class TaskAssingedToMeView(generics.ListAPIView):
