@@ -51,9 +51,9 @@ class TaskViewSet(viewsets.ModelViewSet):
             return TaskPatchSerializer
 
 
-class TaskAssingedToMeViewSet(generics.ListAPIView):
+class TaskAssingedToMeView(generics.ListAPIView):
     """
-    A viewset for viewing and editing instances of tasks that are assigend to one specific user
+    A view for viewing and editing instances of tasks that are assigend to one specific user.
     """
     permission_classes = [AllowAny]
     serializer_class = TaskPostSerializer
@@ -63,9 +63,9 @@ class TaskAssingedToMeViewSet(generics.ListAPIView):
         return Task.objects.filter(assignee=user)
 
 
-class TaskReviewingViewSet(generics.ListAPIView):
+class TaskReviewingView(generics.ListAPIView):
     """
-    A viewset for viewing and editing instances of tasks that are assigend to one specific user
+    A view for viewing and editing instances of tasks that are assigend to one specific user.
     """
     permission_classes = [AllowAny]
     serializer_class = TaskPostSerializer
@@ -75,9 +75,9 @@ class TaskReviewingViewSet(generics.ListAPIView):
         return Task.objects.filter(reviewer=user)
 
 
-class TaskCommentViewSet(generics.ListCreateAPIView):
+class TaskCommentView(generics.ListCreateAPIView):
     """
-    A viewset for viewing and posting and deleting of task comments.
+    A view for viewing and posting and deleting of task comments.
     """
     permission_classes = [AllowAny]
     serializer_class = TaskCommentSerializer
@@ -92,7 +92,7 @@ class TaskCommentViewSet(generics.ListCreateAPIView):
                         task_id=self.kwargs['pk'])
 
 
-class TaskCommentDestroyViewSet(generics.DestroyAPIView):
+class TaskCommentDestroyView(generics.DestroyAPIView):
     """
     A view for deletion of a task comment.
     """
