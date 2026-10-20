@@ -1,9 +1,23 @@
+import datetime
+from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework import generics
-import datetime
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from kanmind_app.models import Board, Task, Comment
-from .serializers import BoardSerializer, TaskPostSerializer, TaskPatchSerializer, TaskCommentSerializer
+from .serializers import BoardSerializer, TaskPostSerializer, TaskPatchSerializer, TaskCommentSerializer, EmailCheckSerializer
+
+
+class EmailCheckView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = EmailCheckSerializer
+
+    def get_queryset(self):
+        check_email = self.request.GET.get("email")
+
+        if not check_email:
+            return User.objects.none()
+
+        return User.objects.filter(email=check_email)
 
 
 class BoardViewSet(viewsets.ModelViewSet):

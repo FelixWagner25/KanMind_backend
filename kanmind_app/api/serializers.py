@@ -3,6 +3,24 @@ from django.contrib.auth.models import User
 from kanmind_app.models import Board, Task, Comment
 
 
+class EmailQuerySerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+
+class EmailCheckSerializer(serializers.ModelSerializer):
+    fullname = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ["id", "email", "fullname"]
+
+    def get_fullname(self, obj):
+        user_full_name = obj.get_full_name()
+        if user_full_name == '':
+            return obj.username
+        return user_full_name
+
+
 class UserSerializer(serializers.ModelSerializer):
     fullname = serializers.SerializerMethodField()
 
