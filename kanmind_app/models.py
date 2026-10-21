@@ -19,8 +19,10 @@ class Task(models.Model):
     description = models.TextField(blank=True)
     board = models.ForeignKey(
         Board, on_delete=models.CASCADE, related_name="tasks")
-    assignee = models.ManyToManyField(User, related_name="assignments")
-    reviewer = models.ManyToManyField(User, related_name="reviews")
+    assignee = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="assignee")
+    reviewer = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="reviewer")
     due_date = models.DateField()
 
     class Status(models.TextChoices):

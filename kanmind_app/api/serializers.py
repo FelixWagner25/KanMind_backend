@@ -37,12 +37,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 class TaskPostSerializer(serializers.ModelSerializer):
     board = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all())
-    assignee = UserSerializer(read_only=True, many=True)
+    assignee = UserSerializer(read_only=True)
     assignee_id = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), many=True, write_only=True, source='assignee')
-    reviewer = UserSerializer(read_only=True, many=True)
+        queryset=User.objects.all(), write_only=True, source='assignee')
+    reviewer = UserSerializer(read_only=True)
     reviewer_id = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), many=True, write_only=True, source='reviewer')
+        queryset=User.objects.all(), write_only=True, source='reviewer')
     comments_count = serializers.SerializerMethodField()
 
     class Meta:
