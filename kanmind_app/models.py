@@ -24,6 +24,8 @@ class Task(models.Model):
     reviewer = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="reviewer")
     due_date = models.DateField()
+    creator = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="creator")
 
     class Status(models.TextChoices):
         TO_DO = "to_do"

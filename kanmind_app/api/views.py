@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import get_object_or_404
 from kanmind_app.models import Board, Task, Comment
 from .serializers import BoardSerializer, BoardDetailSerializer, TaskPostSerializer, TaskPatchSerializer, TaskCommentSerializer, EmailCheckSerializer, EmailQuerySerializer
-from .permissions import IsOwnerOrMember, IsOwner
+from .permissions import IsOwnerOrMember, IsOwner, IsAssignee
 
 
 class EmailCheckView(generics.RetrieveAPIView):
@@ -54,6 +54,9 @@ class TaskCreateView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = TaskPostSerializer
     queryset = Task.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
 
 
 class TaskUpdateDestroyView(generics.GenericAPIView, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
