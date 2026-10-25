@@ -1,5 +1,6 @@
 import datetime
 from django.contrib.auth.models import User
+from django.db.models import Q
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework import mixins
@@ -30,6 +31,12 @@ class BoardViewSet(viewsets.ModelViewSet):
     """
     permission_classes = [IsAuthenticated]
     queryset = Board.objects.all()
+
+    def get_queryset(self):
+        user = self.request.user
+        allowed_boards = Board.objects.filter(
+            Q(owner=user) | Q(members=user)).distinct()
+        return allowed_boards
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
