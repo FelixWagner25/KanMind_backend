@@ -69,10 +69,10 @@ class TaskPostSerializer(serializers.ModelSerializer):
 
 
 class TaskPatchSerializer(serializers.ModelSerializer):
-    assignee = UserSerializer(read_only=True, many=True)
+    assignee = UserSerializer(read_only=True)
     assignee_id = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), many=True, write_only=True, source='assignee')
-    reviewer = UserSerializer(read_only=True, many=True)
+    reviewer = UserSerializer(read_only=True)
     reviewer_id = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), many=True, write_only=True, source='reviewer')
 
