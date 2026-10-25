@@ -53,6 +53,20 @@ class TaskPostSerializer(serializers.ModelSerializer):
     def get_comments_count(self, obj):
         return obj.comments.count()
 
+    def validate(self, data):
+        board = data["board"]
+        assignee = data["assignee"]
+        reviewer = data["reviewer"]
+
+        if not board.members.filter(id=assignee.id).exists():
+            raise serializers.ValidationError(
+                {"assignee_id": "assignee must be board member."})
+        if not board.members.filter(id=reviewer.id).exists():
+            raise serializers.ValidationError(
+                {"reviewer_id": "reviewer must be board member."})
+
+        return data
+
 
 class TaskPatchSerializer(serializers.ModelSerializer):
     assignee = UserSerializer(read_only=True, many=True)
