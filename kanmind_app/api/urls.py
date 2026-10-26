@@ -11,7 +11,7 @@ urlpatterns = [
     path('tasks/reviewing/', TaskReviewingView.as_view()),
     path('tasks/', TaskCreateView.as_view()),
     path('tasks/<int:pk>/', TaskUpdateDestroyView.as_view()),
-    path('tasks/<int:pk>/comments/', TaskCommentView.as_view()),
+    path('tasks/<int:task_id>/comments/', TaskCommentView.as_view()),
     path('tasks/<int:task_id>/comments/<int:pk>/',
          TaskCommentDestroyView.as_view()),
     path('', include(router.urls)),

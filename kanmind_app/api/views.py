@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import get_object_or_404
 from kanmind_app.models import Board, Task, Comment
 from .serializers import BoardSerializer, BoardDetailSerializer, TaskPostSerializer, TaskPatchSerializer, TaskCommentSerializer, EmailCheckSerializer, EmailQuerySerializer
-from .permissions import IsOwnerOrMember, IsOwner, IsBoardMember, IsBoardOwner, IsCreator
+from .permissions import IsOwnerOrMember, IsOwner, IsBoardMember, IsBoardOwner, IsCreator, IsAuthor
 
 
 class EmailCheckView(generics.RetrieveAPIView):
@@ -112,24 +112,24 @@ class TaskCommentView(generics.ListCreateAPIView):
     """
     A view for viewing and posting and deleting of task comments.
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsBoardMember, IsAuthenticated]
     serializer_class = TaskCommentSerializer
 
     def get_queryset(self):
-        task_id = self.kwargs['pk']
-        return Comment.objects.filter(task_id=task_id)
+        task_id = self.kwargs['task_id']
+        return Comment.objects.filter(task_id=task_id).order_by("created_at")
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user,
                         created_at=datetime.datetime.now(),
-                        task_id=self.kwargs['pk'])
+                        task_id=self.kwargs['task_id'])
 
 
 class TaskCommentDestroyView(generics.DestroyAPIView):
     """
     A view for deletion of a task comment.
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthor, IsAuthenticated]
 
     def get_queryset(self):
         return Comment.objects.filter(task_id=self.kwargs['task_id'])
