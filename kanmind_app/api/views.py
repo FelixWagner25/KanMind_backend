@@ -121,7 +121,6 @@ class TaskCommentView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user,
-                        created_at=datetime.datetime.now(),
                         task_id=self.kwargs['task_id'])
 
 
