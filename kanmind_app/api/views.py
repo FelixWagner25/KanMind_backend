@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import get_object_or_404
 from kanmind_app.models import Board, Task, Comment
 from .serializers import BoardSerializer, BoardDetailSerializer, TaskPostSerializer, TaskPatchSerializer, TaskCommentSerializer, EmailCheckSerializer, EmailQuerySerializer
-from .permissions import IsOwnerOrMember, IsOwner, IsBoardMember
+from .permissions import IsOwnerOrMember, IsOwner, IsBoardMember, IsBoardOwner, IsCreator
 
 
 class EmailCheckView(generics.RetrieveAPIView):
@@ -66,7 +66,6 @@ class TaskCreateView(generics.CreateAPIView):
 
 
 class TaskUpdateDestroyView(generics.GenericAPIView, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
-    permission_classes = [IsAuthenticated]
     queryset = Task.objects.all()
     serializer_class = TaskPatchSerializer
 
@@ -75,6 +74,14 @@ class TaskUpdateDestroyView(generics.GenericAPIView, mixins.UpdateModelMixin, mi
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
+
+    def get_permissions(self):
+        if self.request.method == "PATCH":
+            permission_classes = [IsBoardMember, IsAuthenticated]
+        elif self.request.method == "DELETE":
+            permission_classes = [
+                (IsBoardOwner | IsCreator), IsAuthenticated]
+        return [permission() for permission in permission_classes]
 
 
 class TaskAssingedToMeView(generics.ListAPIView):

@@ -71,15 +71,31 @@ class TaskPostSerializer(serializers.ModelSerializer):
 class TaskPatchSerializer(serializers.ModelSerializer):
     assignee = UserSerializer(read_only=True)
     assignee_id = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), many=True, write_only=True, source='assignee')
+        queryset=User.objects.all(), write_only=True, source='assignee')
     reviewer = UserSerializer(read_only=True)
     reviewer_id = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), many=True, write_only=True, source='reviewer')
+        queryset=User.objects.all(), write_only=True, source='reviewer')
 
     class Meta:
         model = Task
         fields = ["id", "title", "description", "status", "priority",
                   "assignee_id", "assignee", "reviewer_id", "reviewer", "due_date"]
+
+    def validate_assignee_id(self, value):
+        board = self.instance.board
+
+        if not board.members.filter(pk=value.id).exists():
+            raise serializers.ValidationError(
+                {"assignee_id": "assignee must be board member."})
+        return value
+
+    def validate_reviewer_id(self, value):
+        board = self.instance.board
+
+        if not board.members.filter(pk=value.id).exists():
+            raise serializers.ValidationError(
+                {"reviewer_id": "reviewer must be board member."})
+        return value
 
 
 class TaskCommentSerializer(serializers.ModelSerializer):
