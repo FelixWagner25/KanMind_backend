@@ -6,7 +6,7 @@ from rest_framework import mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import get_object_or_404
 from kanmind_app.models import Board, Task, Comment
-from .serializers import BoardSerializer, BoardDetailSerializer, TaskPostSerializer, TaskPatchSerializer, TaskCommentSerializer, EmailCheckSerializer, EmailQuerySerializer
+from .serializers import BoardSerializer, BoardRetrieveSerializer, BoardUpdateSerializer, TaskPostSerializer, TaskPatchSerializer, TaskCommentSerializer, EmailCheckSerializer, EmailQuerySerializer
 from .permissions import IsOwnerOrMember, IsOwner, IsBoardMemberCreate, IsBoardOwner, IsCreator, IsAuthor, IsBoardMemberDetail
 
 
@@ -44,8 +44,10 @@ class BoardViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if (self.action == "create" or self.action == "list"):
             return BoardSerializer
-        else:
-            return BoardDetailSerializer
+        elif (self.action == "retrieve"):
+            return BoardRetrieveSerializer
+        elif (self.action == "update" or self.action == "partial_update"):
+            return BoardUpdateSerializer
 
     def get_permissions(self):
         if self.action == "create":

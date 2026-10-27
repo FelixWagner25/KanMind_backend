@@ -141,10 +141,19 @@ class BoardSerializer(serializers.ModelSerializer):
         return obj.tasks.filter(priority="high").count()
 
 
-class BoardDetailSerializer(BoardSerializer):
+class BoardRetrieveSerializer(BoardSerializer):
     members = UserSerializer(read_only=True, many=True)
     tasks = TaskSerializer(read_only=True, many=True)
 
     class Meta:
         model = Board
         fields = ["id", "title", "owner_id", "members", "tasks"]
+
+
+class BoardUpdateSerializer(BoardSerializer):
+    owner_data = UserSerializer(source="owner", read_only=True)
+    members_data = UserSerializer(source="members", read_only=True, many=True)
+
+    class Meta:
+        model = Board
+        fields = ["id", "title", "owner_data", "members_data"]
