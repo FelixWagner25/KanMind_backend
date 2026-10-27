@@ -1,5 +1,5 @@
 from rest_framework import permissions
-from kanmind_app.models import Task
+from kanmind_app.models import Board, Task
 
 
 class IsOwnerOrMember(permissions.BasePermission):
@@ -16,7 +16,16 @@ class IsOwner(permissions.BasePermission):
         return request.user == obj.owner
 
 
-class IsBoardMember(permissions.BasePermission):
+class IsBoardMemberCreate(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        board_id = request.data.get("board")
+        if not board_id:
+            return False
+        return Board.objects.filter(id=board_id, members=request.user).exists()
+
+
+class IsBoardMemberDetail(permissions.BasePermission):
 
     def has_permission(self, request, view):
         task_id = view.kwargs.get("task_id")

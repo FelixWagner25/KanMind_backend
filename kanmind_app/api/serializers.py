@@ -84,7 +84,7 @@ class TaskPatchSerializer(serializers.ModelSerializer):
     def validate_assignee_id(self, value):
         board = self.instance.board
 
-        if not board.members.filter(pk=value.id).exists():
+        if not board.members.filter(task_id=value.id).exists():
             raise serializers.ValidationError(
                 {"assignee_id": "assignee must be board member."})
         return value
@@ -92,7 +92,7 @@ class TaskPatchSerializer(serializers.ModelSerializer):
     def validate_reviewer_id(self, value):
         board = self.instance.board
 
-        if not board.members.filter(pk=value.id).exists():
+        if not board.members.filter(task_id=value.id).exists():
             raise serializers.ValidationError(
                 {"reviewer_id": "reviewer must be board member."})
         return value

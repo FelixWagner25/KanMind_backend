@@ -1,4 +1,3 @@
-import datetime
 from django.contrib.auth.models import User
 from django.db.models import Q
 from rest_framework import viewsets
@@ -8,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import get_object_or_404
 from kanmind_app.models import Board, Task, Comment
 from .serializers import BoardSerializer, BoardDetailSerializer, TaskPostSerializer, TaskPatchSerializer, TaskCommentSerializer, EmailCheckSerializer, EmailQuerySerializer
-from .permissions import IsOwnerOrMember, IsOwner, IsBoardMember, IsBoardOwner, IsCreator, IsAuthor
+from .permissions import IsOwnerOrMember, IsOwner, IsBoardMemberCreate, IsBoardOwner, IsCreator, IsAuthor, IsBoardMemberDetail
 
 
 class EmailCheckView(generics.RetrieveAPIView):
@@ -57,7 +56,7 @@ class BoardViewSet(viewsets.ModelViewSet):
 
 
 class TaskCreateView(generics.CreateAPIView):
-    permission_classes = [IsBoardMember, IsAuthenticated]
+    permission_classes = [IsBoardMemberCreate, IsAuthenticated]
     serializer_class = TaskPostSerializer
     queryset = Task.objects.all()
 
@@ -68,6 +67,7 @@ class TaskCreateView(generics.CreateAPIView):
 class TaskUpdateDestroyView(generics.GenericAPIView, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
     queryset = Task.objects.all()
     serializer_class = TaskPatchSerializer
+    lookup_url_kwarg = "task_id"
 
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
@@ -77,7 +77,7 @@ class TaskUpdateDestroyView(generics.GenericAPIView, mixins.UpdateModelMixin, mi
 
     def get_permissions(self):
         if self.request.method == "PATCH":
-            permission_classes = [IsBoardMember, IsAuthenticated]
+            permission_classes = [IsBoardMemberDetail, IsAuthenticated]
         elif self.request.method == "DELETE":
             permission_classes = [
                 (IsBoardOwner | IsCreator), IsAuthenticated]
@@ -112,7 +112,7 @@ class TaskCommentView(generics.ListCreateAPIView):
     """
     A view for viewing and posting and deleting of task comments.
     """
-    permission_classes = [IsBoardMember, IsAuthenticated]
+    permission_classes = [IsBoardMemberDetail, IsAuthenticated]
     serializer_class = TaskCommentSerializer
 
     def get_queryset(self):

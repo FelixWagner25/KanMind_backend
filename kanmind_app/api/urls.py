@@ -10,9 +10,9 @@ urlpatterns = [
     path('tasks/assigned-to-me/', TaskAssingedToMeView.as_view()),
     path('tasks/reviewing/', TaskReviewingView.as_view()),
     path('tasks/', TaskCreateView.as_view()),
-    path('tasks/<int:pk>/', TaskUpdateDestroyView.as_view()),
+    path('tasks/<int:task_id>/', TaskUpdateDestroyView.as_view()),
     path('tasks/<int:task_id>/comments/', TaskCommentView.as_view()),
-    path('tasks/<int:task_id>/comments/<int:pk>/',
+    path('tasks/<int:task_id>/comments/<int:comment_id>/',
          TaskCommentDestroyView.as_view()),
     path('', include(router.urls)),
 ]
