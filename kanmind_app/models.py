@@ -20,12 +20,12 @@ class Task(models.Model):
     board = models.ForeignKey(
         Board, on_delete=models.CASCADE, related_name="tasks")
     assignee = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="assignee")
+        User, on_delete=models.SET_NULL, related_name="assignee", null=True, blank=True)
     reviewer = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="reviewer")
+        User, on_delete=models.SET_NULL, related_name="reviewer", null=True, blank=True)
     due_date = models.DateField()
     creator = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="creator")
+        User, on_delete=models.SET_NULL, related_name="creator")
 
     class Status(models.TextChoices):
         TO_DO = "to_do"

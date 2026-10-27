@@ -39,10 +39,10 @@ class TaskPostSerializer(serializers.ModelSerializer):
     board = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all())
     assignee = UserSerializer(read_only=True)
     assignee_id = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), write_only=True, source='assignee')
+        queryset=User.objects.all(), write_only=True, source='assignee', required=False, allow_null=True)
     reviewer = UserSerializer(read_only=True)
     reviewer_id = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), write_only=True, source='reviewer')
+        queryset=User.objects.all(), write_only=True, source='reviewer', required=False, allow_null=True)
     comments_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -55,15 +55,17 @@ class TaskPostSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         board = data["board"]
-        assignee = data["assignee"]
-        reviewer = data["reviewer"]
+        assignee = data.get("assignee", None)
+        reviewer = data.get("reviewer", None)
 
-        if not board.members.filter(id=assignee.id).exists():
-            raise serializers.ValidationError(
-                {"assignee_id": "assignee must be board member."})
-        if not board.members.filter(id=reviewer.id).exists():
-            raise serializers.ValidationError(
-                {"reviewer_id": "reviewer must be board member."})
+        if assignee is not None:
+            if not board.members.filter(id=assignee.id).exists():
+                raise serializers.ValidationError(
+                    {"assignee_id": "assignee must be board member."})
+        if reviewer is not None:
+            if not board.members.filter(id=reviewer.id).exists():
+                raise serializers.ValidationError(
+                    {"reviewer_id": "reviewer must be board member."})
 
         return data
 
