@@ -152,8 +152,10 @@ class BoardRetrieveSerializer(BoardSerializer):
 
 class BoardUpdateSerializer(BoardSerializer):
     owner_data = UserSerializer(source="owner", read_only=True)
-    members_data = UserSerializer(source="members", read_only=True, many=True)
+    members_data = UserSerializer(source="members", many=True, read_only=True)
+    members = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), many=True, write_only=True)
 
     class Meta:
         model = Board
-        fields = ["id", "title", "owner_data", "members_data"]
+        fields = ["id", "title", "owner_data", "members", "members_data"]
