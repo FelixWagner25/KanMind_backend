@@ -129,6 +129,7 @@ class TaskCommentDestroyView(generics.DestroyAPIView):
     A view for deletion of a task comment.
     """
     permission_classes = [IsAuthor, IsAuthenticated]
+    lookup_url_kwarg = "comment_id"
 
     def get_queryset(self):
         return Comment.objects.filter(task_id=self.kwargs['task_id'])
