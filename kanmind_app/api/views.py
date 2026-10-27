@@ -53,14 +53,14 @@ class BoardViewSet(viewsets.ModelViewSet):
         if self.action == "create":
             permission_classes = [IsAuthenticated]
         elif self.action == "destroy":
-            permission_classes = [IsOwner, IsAuthenticated]
+            permission_classes = [IsAuthenticated, IsOwner]
         else:
-            permission_classes = [IsOwnerOrMember, IsAuthenticated]
+            permission_classes = [IsAuthenticated, IsOwnerOrMember]
         return [permission() for permission in permission_classes]
 
 
 class TaskCreateView(generics.CreateAPIView):
-    permission_classes = [IsBoardMemberCreate, IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsBoardMemberCreate]
     serializer_class = TaskPostSerializer
     queryset = Task.objects.all()
 
@@ -81,10 +81,10 @@ class TaskUpdateDestroyView(generics.GenericAPIView, mixins.UpdateModelMixin, mi
 
     def get_permissions(self):
         if self.request.method == "PATCH":
-            permission_classes = [IsBoardMemberDetail, IsAuthenticated]
+            permission_classes = [IsAuthenticated, IsBoardMemberDetail]
         elif self.request.method == "DELETE":
             permission_classes = [
-                (IsBoardOwner | IsCreator), IsAuthenticated]
+                IsAuthenticated, (IsBoardOwner | IsCreator)]
         return [permission() for permission in permission_classes]
 
 
@@ -116,7 +116,7 @@ class TaskCommentView(generics.ListCreateAPIView):
     """
     A view for viewing and posting and deleting of task comments.
     """
-    permission_classes = [IsBoardMemberDetail, IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsBoardMemberDetail]
     serializer_class = TaskCommentSerializer
 
     def get_queryset(self):
@@ -132,7 +132,7 @@ class TaskCommentDestroyView(generics.DestroyAPIView):
     """
     A view for deletion of a task comment.
     """
-    permission_classes = [IsAuthor, IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAuthor]
     lookup_url_kwarg = "comment_id"
 
     def get_queryset(self):
