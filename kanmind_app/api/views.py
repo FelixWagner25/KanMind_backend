@@ -32,9 +32,11 @@ class BoardViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        allowed_boards = Board.objects.filter(
-            Q(owner=user) | Q(members=user)).distinct()
-        return allowed_boards
+        if self.action == "list":
+            return Board.objects.filter(
+                Q(owner=user) | Q(members=user)).distinct()
+
+        return Board.objects.all()
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
