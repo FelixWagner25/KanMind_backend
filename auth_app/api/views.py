@@ -3,13 +3,17 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import status
-from .serializers import UserRegistrationSerializer, UserLoginSerializer
+from .serializers import UserLoginSerializer, UserRegistrationSerializer
 
 
 class RegistrationView(APIView):
+    """Registers a new user and returns the user token."""
+
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """Creates the user and returns user data as JSON."""
+
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             new_user = serializer.save()
@@ -19,9 +23,13 @@ class RegistrationView(APIView):
 
 
 class LoginView(APIView):
+    "Authenticates a user and returns the user token."
+
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """Validates user credentials and returns the user data as JSON."""
+
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data["user"]
