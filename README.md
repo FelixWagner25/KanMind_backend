@@ -49,3 +49,7 @@ python manage.py runserver
 ```
 
 The API is available at `http://127.0.0.1:8000/api/`.
+
+## License
+
+This project is intended for educational purposes only. You are welcome to view and explore the code but redistribution and commercial use is not permitted.
