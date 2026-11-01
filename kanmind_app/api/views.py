@@ -5,9 +5,9 @@ from rest_framework import generics
 from rest_framework import mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import get_object_or_404
-from kanmind_app.models import Board, Task, Comment
-from .serializers import BoardSerializer, BoardRetrieveSerializer, BoardUpdateSerializer, TaskPostSerializer, TaskPatchSerializer, TaskCommentSerializer, EmailQuerySerializer, UserSerializer
-from .permissions import IsOwnerOrMember, IsOwner, IsBoardMemberCreate, IsBoardOwner, IsCreator, IsAuthor, IsBoardMemberDetail
+from kanmind_app.models import Comment, Board, Task
+from .serializers import BoardRetrieveSerializer, BoardSerializer,  BoardUpdateSerializer, EmailQuerySerializer, TaskCommentSerializer, TaskPatchSerializer, TaskPostSerializer, UserSerializer
+from .permissions import IsAuthor, IsBoardMemberCreate,  IsBoardMemberDetail, IsBoardOwner, IsCreator, IsOwner, IsOwnerOrMember
 
 
 class EmailCheckView(generics.RetrieveAPIView):
