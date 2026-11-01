@@ -32,7 +32,7 @@ class LoginView(APIView):
 
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.validated_data["user"]
+            user = serializer.validated_data['user']
             user_token = Token.objects.get(user=user).key
             return Response({"token": user_token, "fullname": user.username, "email": user.email, "user_id": user.id}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

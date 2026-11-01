@@ -10,8 +10,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     repeated_password = serializers.CharField(write_only=True)
 
     class Meta:
-        """Maps the user fields."""
-
         model = User
         fields = ['id', 'username', 'email', 'password', 'repeated_password']
 
@@ -61,5 +59,5 @@ class UserLoginSerializer(serializers.Serializer):
                 {"password": "Incorrect password."}
             )
 
-        data["user"] = user
+        data['user'] = user
         return data

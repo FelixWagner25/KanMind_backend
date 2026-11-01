@@ -4,6 +4,7 @@ from kanmind_app.models import Board, Task
 
 
 class IsOwnerOrMember(permissions.BasePermission):
+    """Allows access to board owner and board member."""
 
     def has_object_permission(self, request, view, obj):
         if obj.members.filter(pk=request.user.pk).exists():
@@ -12,12 +13,14 @@ class IsOwnerOrMember(permissions.BasePermission):
 
 
 class IsOwner(permissions.BasePermission):
+    """Allows access to object's owner."""
 
     def has_object_permission(self, request, view, obj):
         return request.user == obj.owner
 
 
 class IsBoardMemberCreate(permissions.BasePermission):
+    """Allows access for board members for create operations."""
 
     def has_permission(self, request, view):
         board_id = request.data.get("board")
@@ -27,6 +30,7 @@ class IsBoardMemberCreate(permissions.BasePermission):
 
 
 class IsBoardMemberDetail(permissions.BasePermission):
+    """Allows access for board members for retrieve, update and destroy operations."""
 
     def has_permission(self, request, view):
         task_id = view.kwargs.get("task_id")
@@ -36,18 +40,21 @@ class IsBoardMemberDetail(permissions.BasePermission):
 
 
 class IsBoardOwner(permissions.BasePermission):
+    """Allows access for board owner of a specific task."""
 
     def has_object_permission(self, request, view, obj):
         return obj.board.owner == request.user
 
 
 class IsCreator(permissions.BasePermission):
+    """Allows access for the creator of a task."""
 
     def has_object_permission(self, request, view, obj):
         return request.user == obj.creator
 
 
 class IsAuthor(permissions.BasePermission):
+    """Allows access for the author of a comment."""
 
     def has_object_permission(self, request, view, obj):
         return request.user == obj.author

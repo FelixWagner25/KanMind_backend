@@ -4,31 +4,22 @@ from kanmind_app.models import Board, Task, Comment
 
 
 class EmailQuerySerializer(serializers.Serializer):
+    """Serializes and implicitly validates a user's email."""
+
     email = serializers.EmailField(required=True)
 
 
-class EmailCheckSerializer(serializers.ModelSerializer):
-    fullname = serializers.SerializerMethodField()
-
-    class Meta:
-        model = User
-        fields = ["id", "email", "fullname"]
-
-    def get_fullname(self, obj):
-        user_full_name = obj.get_full_name()
-        if user_full_name == '':
-            return obj.username
-        return user_full_name
-
-
 class UserSerializer(serializers.ModelSerializer):
+    """Serializes user with desired API fields."""
+
     fullname = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ["id", "email", "fullname"]
+        fields = ['id', 'email', 'fullname']
 
     def get_fullname(self, obj):
+        """Returns a user's full name."""
         user_full_name = obj.get_full_name()
         if user_full_name == '':
             return obj.username
@@ -36,6 +27,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class TaskPostSerializer(serializers.ModelSerializer):
+    """Serializes a task for post methods with the desired API fields."""
+
     board = serializers.PrimaryKeyRelatedField(queryset=Board.objects.all())
     assignee = UserSerializer(read_only=True)
     assignee_id = serializers.PrimaryKeyRelatedField(
@@ -47,16 +40,19 @@ class TaskPostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ["id", "board", "title", "description", "status", "priority",
-                  "assignee_id", "assignee", "reviewer_id", "reviewer", "due_date", "comments_count"]
+        fields = ['id', 'board', 'title', 'description', 'status', 'priority',
+                  'assignee_id', 'assignee', 'reviewer_id', 'reviewer', 'due_date', 'comments_count']
 
     def get_comments_count(self, obj):
+        """Returns nuber of comments assigned to a task."""
         return obj.comments.count()
 
     def validate(self, data):
-        board = data["board"]
-        assignee = data.get("assignee", None)
-        reviewer = data.get("reviewer", None)
+        """Validates assignee and reviewer API fields."""
+
+        board = data['board']
+        assignee = data.get('assignee', None)
+        reviewer = data.get('reviewer', None)
 
         if assignee is not None:
             if not board.members.filter(id=assignee.id).exists():
@@ -71,6 +67,8 @@ class TaskPostSerializer(serializers.ModelSerializer):
 
 
 class TaskPatchSerializer(serializers.ModelSerializer):
+    """Serializes a task with the desired API fields for patch methods."""
+
     assignee = UserSerializer(read_only=True)
     assignee_id = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), write_only=True, source='assignee')
@@ -80,12 +78,12 @@ class TaskPatchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ["id", "title", "description", "status", "priority",
-                  "assignee_id", "assignee", "reviewer_id", "reviewer", "due_date"]
+        fields = ['id', 'title', 'description', 'status', 'priority',
+                  'assignee_id', 'assignee', 'reviewer_id', 'reviewer', 'due_date']
 
     def validate_assignee_id(self, value):
         if value is None:
-            return self.instance.getattr("assignee", None)
+            return self.instance.getattr('assignee', None)
 
         board = self.instance.board
         if not board.members.filter(pk=value.id).exists():
@@ -95,7 +93,7 @@ class TaskPatchSerializer(serializers.ModelSerializer):
 
     def validate_reviewer_id(self, value):
         if value is None:
-            return self.instance.getattr("reviewer", None)
+            return self.instance.getattr('reviewer', None)
 
         board = self.instance.board
         if not board.members.filter(pk=value.id).exists():
@@ -110,14 +108,14 @@ class TaskCommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ["id", "created_at", "author", "content"]
+        fields = ['id', 'created_at', 'author', 'content']
 
 
 class TaskSerializer(TaskPostSerializer):
     class Meta:
         model = Task
-        fields = ["id", "title", "description", "status", "priority",
-                  "assignee", "reviewer", "due_date", "comments_count"]
+        fields = ['id', 'title', 'description', 'status', 'priority',
+                  'assignee', 'reviewer', 'due_date', 'comments_count']
 
 
 class BoardSerializer(serializers.ModelSerializer):
@@ -131,8 +129,8 @@ class BoardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Board
-        fields = ["id", "title", "member_count", "member_ids", "ticket_count", "tasks_to_do_count", "tasks_high_prio_count",
-                  "owner_id"]
+        fields = ['id', 'title', 'member_count', 'member_ids', 'ticket_count', 'tasks_to_do_count', 'tasks_high_prio_count',
+                  'owner_id']
 
     def get_member_count(self, obj):
         return obj.members.count()
@@ -141,10 +139,10 @@ class BoardSerializer(serializers.ModelSerializer):
         return obj.tasks.count()
 
     def get_tasks_to_do_count(self, obj):
-        return obj.tasks.filter(status="to_do").count()
+        return obj.tasks.filter(status='to_do').count()
 
     def get_tasks_high_prio_count(self, obj):
-        return obj.tasks.filter(priority="high").count()
+        return obj.tasks.filter(priority='high').count()
 
 
 class BoardRetrieveSerializer(BoardSerializer):
@@ -153,15 +151,15 @@ class BoardRetrieveSerializer(BoardSerializer):
 
     class Meta:
         model = Board
-        fields = ["id", "title", "owner_id", "members", "tasks"]
+        fields = ['id', 'title', 'owner_id', 'members', 'tasks']
 
 
 class BoardUpdateSerializer(BoardSerializer):
-    owner_data = UserSerializer(source="owner", read_only=True)
-    members_data = UserSerializer(source="members", many=True, read_only=True)
+    owner_data = UserSerializer(source='owner', read_only=True)
+    members_data = UserSerializer(source='members', many=True, read_only=True)
     members = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), many=True, write_only=True)
 
     class Meta:
         model = Board
-        fields = ["id", "title", "owner_data", "members", "members_data"]
+        fields = ['id', 'title', 'owner_data', 'members', 'members_data']

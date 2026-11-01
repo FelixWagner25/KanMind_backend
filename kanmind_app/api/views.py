@@ -6,13 +6,13 @@ from rest_framework import mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import get_object_or_404
 from kanmind_app.models import Board, Task, Comment
-from .serializers import BoardSerializer, BoardRetrieveSerializer, BoardUpdateSerializer, TaskPostSerializer, TaskPatchSerializer, TaskCommentSerializer, EmailCheckSerializer, EmailQuerySerializer
+from .serializers import BoardSerializer, BoardRetrieveSerializer, BoardUpdateSerializer, TaskPostSerializer, TaskPatchSerializer, TaskCommentSerializer, EmailQuerySerializer, UserSerializer
 from .permissions import IsOwnerOrMember, IsOwner, IsBoardMemberCreate, IsBoardOwner, IsCreator, IsAuthor, IsBoardMemberDetail
 
 
 class EmailCheckView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = EmailCheckSerializer
+    serializer_class = UserSerializer
 
     def get_object(self):
         serializer = EmailQuerySerializer(data=self.request.GET)
