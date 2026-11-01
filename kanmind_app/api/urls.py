@@ -1,6 +1,6 @@
 from rest_framework import routers
 from django.urls import path, include
-from .views import BoardViewSet, TaskCreateView, TaskUpdateDestroyView, TaskAssingedToMeView, TaskReviewingView, TaskCommentView, TaskCommentDestroyView, EmailCheckView
+from .views import BoardViewSet, EmailCheckView, TaskAssingedToMeView, TaskCreateView, TaskCommentView, TaskCommentDestroyView, TaskUpdateDestroyView,  TaskReviewingView
 
 router = routers.SimpleRouter()
 router.register(r'boards', BoardViewSet)

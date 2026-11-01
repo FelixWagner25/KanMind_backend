@@ -11,48 +11,50 @@ from .permissions import IsOwnerOrMember, IsOwner, IsBoardMemberCreate, IsBoardO
 
 
 class EmailCheckView(generics.RetrieveAPIView):
+    """Endpoint for email check view."""
     permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
 
     def get_object(self):
+        """Returns user data is queried email is registered or 404 not found otherwise."""
         serializer = EmailQuerySerializer(data=self.request.GET)
-
         serializer.is_valid(raise_exception=True)
-
-        email = serializer.validated_data["email"]
+        email = serializer.validated_data['email']
         user = get_object_or_404(User, email=email)
         return user
 
 
 class BoardViewSet(viewsets.ModelViewSet):
-    """
-    A viewset for viewing and editing board instances.
-    """
+    """CRUD endpoints for boards."""
     queryset = Board.objects.all()
 
     def get_queryset(self):
+        """Returns boards the current user is allowed to see."""
         user = self.request.user
-        if self.action == "list":
+        if self.action == 'list':
             return Board.objects.filter(
                 Q(owner=user) | Q(members=user)).distinct()
 
         return Board.objects.all()
 
     def perform_create(self, serializer):
+        """Saves board instance and assigned current user as board owner."""
         serializer.save(owner=self.request.user)
 
     def get_serializer_class(self):
-        if (self.action == "create" or self.action == "list"):
+        """Selects the appropriate serializer depending on the performed action."""
+        if (self.action == 'create' or self.action == 'list'):
             return BoardSerializer
-        elif (self.action == "retrieve"):
+        elif (self.action == 'retrieve'):
             return BoardRetrieveSerializer
-        elif (self.action == "update" or self.action == "partial_update"):
+        elif (self.action == 'update' or self.action == 'partial_update'):
             return BoardUpdateSerializer
 
     def get_permissions(self):
-        if self.action == "create":
+        """Selects the appropriate permission depending on the performed action."""
+        if self.action == 'create':
             permission_classes = [IsAuthenticated]
-        elif self.action == "destroy":
+        elif self.action == 'destroy':
             permission_classes = [IsAuthenticated, IsOwner]
         else:
             permission_classes = [IsAuthenticated, IsOwnerOrMember]
@@ -60,6 +62,8 @@ class BoardViewSet(viewsets.ModelViewSet):
 
 
 class TaskCreateView(generics.CreateAPIView):
+    """Endpoint to create tasks."""
+
     permission_classes = [IsAuthenticated, IsBoardMemberCreate]
     serializer_class = TaskPostSerializer
     queryset = Task.objects.all()
@@ -69,9 +73,11 @@ class TaskCreateView(generics.CreateAPIView):
 
 
 class TaskUpdateDestroyView(generics.GenericAPIView, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
+    """Endpoints to patch and delete tasks."""
+
     queryset = Task.objects.all()
     serializer_class = TaskPatchSerializer
-    lookup_url_kwarg = "task_id"
+    lookup_url_kwarg = 'task_id'
 
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
@@ -80,18 +86,17 @@ class TaskUpdateDestroyView(generics.GenericAPIView, mixins.UpdateModelMixin, mi
         return self.destroy(request, *args, **kwargs)
 
     def get_permissions(self):
-        if self.request.method == "PATCH":
+        if self.request.method == 'PATCH':
             permission_classes = [IsAuthenticated, IsBoardMemberDetail]
-        elif self.request.method == "DELETE":
+        elif self.request.method == 'DELETE':
             permission_classes = [
                 IsAuthenticated, (IsBoardOwner | IsCreator)]
         return [permission() for permission in permission_classes]
 
 
 class TaskAssingedToMeView(generics.ListAPIView):
-    """
-    A view for viewing and editing instances of tasks that are assigend to one specific user.
-    """
+    """Endpoint to list all tasks assigned to the logged in user."""
+
     permission_classes = [IsAuthenticated]
     serializer_class = TaskPostSerializer
 
@@ -101,9 +106,8 @@ class TaskAssingedToMeView(generics.ListAPIView):
 
 
 class TaskReviewingView(generics.ListAPIView):
-    """
-    A view for viewing and editing instances of tasks that are assigend to one specific user.
-    """
+    """Endpoint to list all tasks where the logged in user is reviewing."""
+
     permission_classes = [IsAuthenticated]
     serializer_class = TaskPostSerializer
 
@@ -113,15 +117,14 @@ class TaskReviewingView(generics.ListAPIView):
 
 
 class TaskCommentView(generics.ListCreateAPIView):
-    """
-    A view for viewing and posting and deleting of task comments.
-    """
+    """Endpoints to list and create comments."""
+
     permission_classes = [IsAuthenticated, IsBoardMemberDetail]
     serializer_class = TaskCommentSerializer
 
     def get_queryset(self):
         task_id = self.kwargs['task_id']
-        return Comment.objects.filter(task_id=task_id).order_by("created_at")
+        return Comment.objects.filter(task_id=task_id).order_by('created_at')
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user,
@@ -129,11 +132,10 @@ class TaskCommentView(generics.ListCreateAPIView):
 
 
 class TaskCommentDestroyView(generics.DestroyAPIView):
-    """
-    A view for deletion of a task comment.
-    """
+    """Endpoint to delete comments."""
+
     permission_classes = [IsAuthenticated, IsAuthor]
-    lookup_url_kwarg = "comment_id"
+    lookup_url_kwarg = 'comment_id'
 
     def get_queryset(self):
         return Comment.objects.filter(task_id=self.kwargs['task_id'])
