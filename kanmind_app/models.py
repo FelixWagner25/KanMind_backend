@@ -1,10 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here.
-
 
 class Board(models.Model):
+    """A board model for KanMind app."""
+
     title = models.CharField(max_length=255)
     owner = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="board_ownings")
@@ -15,6 +15,8 @@ class Board(models.Model):
 
 
 class Task(models.Model):
+    """A task model for KanMind app."""
+
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     board = models.ForeignKey(
@@ -48,6 +50,8 @@ class Task(models.Model):
 
 
 class Comment(models.Model):
+    """A comment model for KanMind app."""
+
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="comments")
     created_at = models.DateTimeField(auto_now_add=True)

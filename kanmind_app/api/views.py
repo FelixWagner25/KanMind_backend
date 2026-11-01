@@ -69,6 +69,7 @@ class TaskCreateView(generics.CreateAPIView):
     queryset = Task.objects.all()
 
     def perform_create(self, serializer):
+        """Saves task and assignes user as task creator."""
         serializer.save(creator=self.request.user)
 
 
@@ -80,12 +81,15 @@ class TaskUpdateDestroyView(generics.GenericAPIView, mixins.UpdateModelMixin, mi
     lookup_url_kwarg = 'task_id'
 
     def patch(self, request, *args, **kwargs):
+        """Updates a task object."""
         return self.partial_update(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
+        """Deletes a task object."""
         return self.destroy(request, *args, **kwargs)
 
     def get_permissions(self):
+        """Selects the appripriate perission. Members can updated tasks, only owner can delete task."""
         if self.request.method == 'PATCH':
             permission_classes = [IsAuthenticated, IsBoardMemberDetail]
         elif self.request.method == 'DELETE':
@@ -101,6 +105,7 @@ class TaskAssingedToMeView(generics.ListAPIView):
     serializer_class = TaskPostSerializer
 
     def get_queryset(self):
+        """Selects and returns tasks where the user is assignee."""
         user = self.request.user
         return Task.objects.filter(assignee=user)
 
@@ -112,6 +117,7 @@ class TaskReviewingView(generics.ListAPIView):
     serializer_class = TaskPostSerializer
 
     def get_queryset(self):
+        """Selects and returns tasks where the user is reviewer."""
         user = self.request.user
         return Task.objects.filter(reviewer=user)
 
@@ -123,10 +129,12 @@ class TaskCommentView(generics.ListCreateAPIView):
     serializer_class = TaskCommentSerializer
 
     def get_queryset(self):
+        """Selects and returns the comments that are assigned to a certain task."""
         task_id = self.kwargs['task_id']
         return Comment.objects.filter(task_id=task_id).order_by('created_at')
 
     def perform_create(self, serializer):
+        """Saves comment and assignes user as author."""
         serializer.save(author=self.request.user,
                         task_id=self.kwargs['task_id'])
 
@@ -138,4 +146,5 @@ class TaskCommentDestroyView(generics.DestroyAPIView):
     lookup_url_kwarg = 'comment_id'
 
     def get_queryset(self):
+        """Selects and returns comments that are assigned to a certain task."""
         return Comment.objects.filter(task_id=self.kwargs['task_id'])
