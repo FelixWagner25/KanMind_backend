@@ -105,11 +105,14 @@ class TaskCommentSerializer(serializers.ModelSerializer):
     """Serializes comments with the desired API fields."""
 
     created_at = serializers.DateTimeField(read_only=True)
-    author = serializers.PrimaryKeyRelatedField(read_only=True)
+    author = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
         fields = ['id', 'created_at', 'author', 'content']
+
+    def get_author(self, obj):
+        return obj.author.get_full_name()
 
 
 class TaskSerializer(TaskPostSerializer):
