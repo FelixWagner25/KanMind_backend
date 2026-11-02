@@ -64,7 +64,7 @@ class BoardViewSet(viewsets.ModelViewSet):
 class TaskCreateView(generics.CreateAPIView):
     """Endpoint to create tasks."""
 
-    permission_classes = [IsAuthenticated, IsBoardMemberCreate]
+    permission_classes = [IsAuthenticated, IsBoardMemberCreate, IsBoardOwner]
     serializer_class = TaskPostSerializer
     queryset = Task.objects.all()
 
@@ -91,7 +91,8 @@ class TaskUpdateDestroyView(generics.GenericAPIView, mixins.UpdateModelMixin, mi
     def get_permissions(self):
         """Selects the appripriate perission. Members can updated tasks, only owner can delete task."""
         if self.request.method == 'PATCH':
-            permission_classes = [IsAuthenticated, IsBoardMemberDetail]
+            permission_classes = [IsAuthenticated,
+                                  IsBoardMemberDetail, IsBoardOwner]
         elif self.request.method == 'DELETE':
             permission_classes = [
                 IsAuthenticated, (IsBoardOwner | IsCreator)]

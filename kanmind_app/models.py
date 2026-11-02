@@ -30,8 +30,8 @@ class Task(models.Model):
         User, on_delete=models.SET_NULL, related_name="creator", null=True, blank=True)
 
     class Status(models.TextChoices):
-        TO_DO = "to_do"
-        IN_PROGRESS = "in_progress"
+        TO_DO = "to-do"
+        IN_PROGRESS = "in-progress"
         REVIEW = "review"
         DONE = "done"
 

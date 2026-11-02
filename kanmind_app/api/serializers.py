@@ -125,8 +125,8 @@ class BoardSerializer(serializers.ModelSerializer):
     """Serializes a board with the desired API fields."""
 
     member_count = serializers.SerializerMethodField()
-    member_ids = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), many=True, write_only=True, source='members')
+    members = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), many=True, write_only=True)
     owner_id = serializers.PrimaryKeyRelatedField(read_only=True)
     ticket_count = serializers.SerializerMethodField()
     tasks_to_do_count = serializers.SerializerMethodField()
@@ -134,7 +134,7 @@ class BoardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Board
-        fields = ['id', 'title', 'member_count', 'member_ids', 'ticket_count', 'tasks_to_do_count', 'tasks_high_prio_count',
+        fields = ['id', 'title', 'member_count', 'members', 'ticket_count', 'tasks_to_do_count', 'tasks_high_prio_count',
                   'owner_id']
 
     def get_member_count(self, obj):
