@@ -11,3 +11,4 @@ kanmind_app/migrations/__pycache__/
 auth_app/api/__pycache__/
 auth_app/__pycache__/
 auth_app/migrations/__pycache__/
+core/__pycache__/
