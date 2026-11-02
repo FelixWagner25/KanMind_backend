@@ -38,7 +38,6 @@ pip install -r requirements.txt
 ### 4. Apply model migrations
 
 ```bash
-python manage.py makemigrations
 python manage.py migrate
 ```
 
