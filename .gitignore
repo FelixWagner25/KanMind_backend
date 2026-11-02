@@ -5,5 +5,5 @@
 db.sqlite3
 
 # Migrations
-kanmind_app/migrations/
-auth_app/migrations/
+kanmind_app/api/__pycache__/
+auth_app/api/__pycache__/
