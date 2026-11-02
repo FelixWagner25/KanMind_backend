@@ -4,6 +4,10 @@
 # Database
 db.sqlite3
 
-# Migrations
+# Pycaches
 kanmind_app/api/__pycache__/
+kanmind_app/__pycache__/
+kanmind_app/migrations/__pycache__/
 auth_app/api/__pycache__/
+auth_app/__pycache__/
+auth_app/migrations/__pycache__/
