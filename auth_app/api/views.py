@@ -18,7 +18,7 @@ class RegistrationView(APIView):
         if serializer.is_valid():
             new_user = serializer.save()
             new_user_token = Token.objects.get(user=new_user).key
-            return Response({"token": new_user_token, "fullname": new_user.username, "email": new_user.email, "user_id": new_user.id}, status=status.HTTP_201_CREATED)
+            return Response({"token": new_user_token, "fullname": new_user.get_full_name(), "email": new_user.email, "user_id": new_user.id}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -34,5 +34,5 @@ class LoginView(APIView):
         if serializer.is_valid():
             user = serializer.validated_data['user']
             user_token = Token.objects.get(user=user).key
-            return Response({"token": user_token, "fullname": user.username, "email": user.email, "user_id": user.id}, status=status.HTTP_200_OK)
+            return Response({"token": user_token, "fullname": user.get_full_name(), "email": user.email, "user_id": user.id}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

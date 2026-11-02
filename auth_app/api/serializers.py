@@ -6,12 +6,13 @@ from rest_framework.authtoken.models import Token
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """Validates registration data and creates a user with an authentication token."""
 
+    fullname = serializers.CharField(write_only=True)
     password = serializers.CharField(write_only=True)
     repeated_password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password', 'repeated_password']
+        fields = ['id', 'fullname', 'email', 'password', 'repeated_password']
 
     def validate(self, data):
         """Validates matching of entered passwords and if the entered email is already assigned to a different user."""
@@ -29,11 +30,16 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Creates the user and its authentication token."""
-
+        fullname = self.validated_data.pop('fullname')
+        name_split = fullname.strip().split(maxsplit=1)
+        first_name = name_split[0]
+        last_name = name_split[1]
         validated_data.pop('repeated_password')
         user = User.objects.create_user(
-            username=validated_data['username'],
+            username=validated_data['email'],
             email=validated_data['email'],
+            first_name=first_name,
+            last_name=last_name,
             password=validated_data['password']
         )
         Token.objects.create(user=user)
