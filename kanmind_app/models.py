@@ -46,7 +46,7 @@ class Task(models.Model):
         max_length=6, choices=Priority.choices, default=Priority.MEDIUM)
 
     def __str__(self):
-        return f"{self.title} {self.board}"
+        return f"{self.title} @Board: {self.board}"
 
 
 class Comment(models.Model):
@@ -60,4 +60,4 @@ class Comment(models.Model):
         "Task", on_delete=models.CASCADE, related_name='comments')
 
     def __str__(self):
-        return f"{self.author} {self.created_at}" + f"{self.content}"[:10]
+        return f"{self.content}"[:10] + f" :from {self.author} @Task: {self.created_at}"
